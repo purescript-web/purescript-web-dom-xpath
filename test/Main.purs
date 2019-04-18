@@ -52,35 +52,35 @@ main = runTest do
       tlog RT.string_type
       tlog $ "got a node: " <> (nodeName note)
 
-      noteToRes <- pure $ XP.evaluate
+      noteToRes <- liftEffect $ XP.evaluate
         ("/note/to") note Nothing RT.string_type Nothing noteDoc
-      noteTo <- pure $ XP.stringValue noteToRes
+      noteTo <- liftEffect $ XP.stringValue noteToRes
       tlog $ "got a note to: " <> noteTo
       Assert.equal RT.string_type (XP.resultType noteToRes)
       Assert.equal "Tove" noteTo
 
-      cdPriceRes <- pure $ XP.evaluate
+      cdPriceRes <- liftEffect $ XP.evaluate
         ("/CATALOG/CD[2]/PRICE") catalog Nothing RT.number_type Nothing catalogDoc
-      cdPrice <- pure $ XP.numberValue cdPriceRes
+      cdPrice <- liftEffect $ XP.numberValue cdPriceRes
       tlog $ "got a cd price: " <> (show cdPrice)
       Assert.equal RT.number_type (XP.resultType cdPriceRes)
       Assert.equal 9.90 cdPrice
 
-      cdYearRes <- pure $ XP.evaluate
+      cdYearRes <- liftEffect $ XP.evaluate
         ("/CATALOG/CD[2]/YEAR") catalog Nothing RT.number_type Nothing catalogDoc
-      cdYear <- pure $ XP.numberValue cdYearRes
+      cdYear <- liftEffect $ XP.numberValue cdYearRes
       tlog $ "got a cd year: " <> (show cdYear)
       Assert.equal RT.number_type (XP.resultType cdYearRes)
       Assert.equal (toNumber 1988) cdYear
 
-      cdsSnapRes <- pure $ XP.evaluate
+      cdsSnapRes <- liftEffect $ XP.evaluate
         ("/CATALOG/CD")
         catalog
         Nothing
         RT.unordered_node_snapshot_type
         Nothing
         catalogDoc
-      cdsSnapLen <- pure $ XP.snapshotLength cdsSnapRes
+      cdsSnapLen <- liftEffect $ XP.snapshotLength cdsSnapRes
       tlog $ "got " <> (show cdsSnapLen) <> " CDs"
       Assert.equal (intToNat 26) cdsSnapLen
 
@@ -91,14 +91,14 @@ main = runTest do
       atomFeedDoc <- pure $ parseAtomFeedDoc domParser
       atomFeed <- pure $ toNode atomFeedDoc
 
-      atomEntriesRes <- pure $ XP.evaluate
+      atomEntriesRes <- liftEffect $ XP.evaluate
         ("//dummyns:entry")
         atomFeed
         (Just atomResolver)
         RT.unordered_node_snapshot_type
         Nothing
         atomFeedDoc
-      atomEntriesLen <- pure $ XP.snapshotLength atomEntriesRes
+      atomEntriesLen <- liftEffect $ XP.snapshotLength atomEntriesRes
       tlog $ "got " <> (show atomEntriesLen) <> " atom entries"
       Assert.equal (intToNat 3) atomEntriesLen
 

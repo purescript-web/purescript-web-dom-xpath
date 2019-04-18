@@ -6,6 +6,7 @@ import Data.Int                               (round, toNumber)
 import Data.Maybe                             (Maybe{-(..)-})
 import Data.Nullable                          (Nullable, toMaybe, toNullable)
 import Data.Natural                           (Natural, intToNat, natToInt)
+import Effect                                 (Effect)
 import Web.DOM.Document                       (Document{-, documentElement-})
 import Web.DOM.Node                           (Node{-, ownerDocument-})
 import Web.DOM.Document.XPath.ResultType      (ResultType)
@@ -21,7 +22,7 @@ evaluate ::
   -> ResultType
   -> Maybe XPathResult
   -> Document
-  -> XPathResult
+  -> Effect XPathResult
 evaluate xpath ctxt nsres resType res doc =
   evaluateInternal xpath ctxt (toNullable nsres) resType (toNullable res) doc
 
@@ -32,7 +33,7 @@ foreign import evaluateInternal ::
   -> ResultType
   -> Nullable XPathResult
   -> Document
-  -> XPathResult
+  -> Effect XPathResult
 
 -- createExpression :: TODO
 
@@ -41,29 +42,30 @@ foreign import evaluateInternal ::
 
 foreign import resultType :: XPathResult -> ResultType
 
-foreign import numberValue :: XPathResult -> Number
+foreign import numberValue :: XPathResult -> Effect Number
 
-foreign import stringValue :: XPathResult -> String
+foreign import stringValue :: XPathResult -> Effect String
 
-foreign import booleanValue :: XPathResult -> Boolean
+foreign import booleanValue :: XPathResult -> Effect Boolean
 
-foreign import singleNodeValueInternal :: XPathResult -> Nullable Node
-singleNodeValue :: XPathResult -> Maybe Node
-singleNodeValue = toMaybe <<< singleNodeValueInternal
+foreign import singleNodeValueInternal :: XPathResult -> Effect (Nullable Node)
+singleNodeValue :: XPathResult -> Effect (Maybe Node)
+singleNodeValue = map toMaybe <<< singleNodeValueInternal
 
 foreign import invalidIteratorState :: XPathResult -> Boolean
 
-foreign import snapshotLengthInternal :: XPathResult -> Number
-snapshotLength :: XPathResult -> Natural
-snapshotLength = intToNat <<< round <<< snapshotLengthInternal
+foreign import snapshotLengthInternal :: XPathResult -> Effect Number
+snapshotLength :: XPathResult -> Effect Natural
+snapshotLength = map (intToNat <<< round) <<< snapshotLengthInternal
 
-foreign import iterateNextInternal :: XPathResult -> Nullable Node
-iterateNext :: XPathResult -> Maybe Node
-iterateNext = toMaybe <<< iterateNextInternal
+foreign import iterateNextInternal :: XPathResult -> Effect (Nullable Node)
+iterateNext :: XPathResult -> Effect (Maybe Node)
+iterateNext = map toMaybe <<< iterateNextInternal
 
-foreign import snapshotItemInternal :: XPathResult -> Number -> Nullable Node
-snapshotItem :: XPathResult -> Natural -> Maybe Node
-snapshotItem xpres ix = toMaybe $
+foreign import snapshotItemInternal ::
+  XPathResult -> Number -> Effect (Nullable Node)
+snapshotItem :: XPathResult -> Natural -> Effect (Maybe Node)
+snapshotItem xpres ix = map toMaybe $
   snapshotItemInternal xpres (toNumber $ natToInt $ ix)
 
   --- namespace resolver functions ---
