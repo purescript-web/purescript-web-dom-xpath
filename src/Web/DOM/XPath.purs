@@ -3,12 +3,13 @@ module Web.DOM.Document.XPath where
 import Prelude
 
 import Data.Int                               (round, toNumber)
-import Data.Maybe                             (Maybe{-(..)-})
+import Data.Maybe                             (Maybe(..))
 import Data.Nullable                          (Nullable, toMaybe, toNullable)
 import Data.Natural                           (Natural, intToNat, natToInt)
 import Effect                                 (Effect)
-import Web.DOM.Document                       (Document{-, documentElement-})
-import Web.DOM.Node                           (Node{-, ownerDocument-})
+import Web.DOM.Document                       (Document, documentElement, fromNode)
+import Web.DOM.Element                        (toNode)
+import Web.DOM.Node                           (Node, ownerDocument)
 import Web.DOM.Document.XPath.ResultType      (ResultType)
 
 foreign import data XPathEvaluator :: Type
@@ -76,8 +77,12 @@ foreign import createNSResolver :: Node -> Document -> NSResolver
 
 -- | Same interface as `createNSResolver`, but will use the owner
 -- document as the nodeResolver if it exists. See [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Introduction_to_using_XPath_in_JavaScript#Implementing_a_Default_Namespace_Resolver).
--- TODO: need to add Effect handling here:
--- defaultNSResolver :: Node -> Document -> NSResolver
--- defaultNSResolver nodeRes doc = case ownerDocument nodeRes of
---   Nothing -> documentElement nodeRes
---   Just ownerDoc -> documentElement ownerDoc
+defaultNSResolver :: Node -> Document -> Effect NSResolver
+defaultNSResolver nodeRes doc = do
+  ownerDoc <- ownerDocument nodeRes
+  nodeResFinal <- case ownerDoc of
+    Nothing -> case (fromNode nodeRes) of
+      Nothing -> pure nodeRes
+      Just nodeResEl ->  documentElement (toNode nodeResEl)
+    Just od -> documentElement od
+  createNSResolver nodeResFinal doc
