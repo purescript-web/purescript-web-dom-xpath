@@ -6,13 +6,15 @@ exports.evaluateInternal = function (xpathExpression) {
       return function (resultType) {
         return function (result) {
           return function (doc) {
-            return doc.evaluate(
-              xpathExpression
-              , contextNode
-              , namespaceResolver
-              , resultType
-              , result
-            );
+            return function () { // Effect thunk
+              return doc.evaluate(
+                xpathExpression
+                , contextNode
+                , namespaceResolver
+                , resultType
+                , result
+              );
+            };
           };
         };
       };
@@ -28,19 +30,27 @@ exports.resultType = function (xpathResult) {
 };
 
 exports.numberValue = function (xpathResult) {
-  return xpathResult.numberValue;
+  return function () { // Effect thunk
+    return xpathResult.numberValue;
+  };
 };
 
 exports.stringValue = function (xpathResult) {
-  return xpathResult.stringValue;
+  return function () { // Effect thunk
+    return xpathResult.stringValue;
+  };
 };
 
 exports.booleanValue = function (xpathResult) {
-  return xpathResult.booleanValue;
+  return function () { // Effect thunk
+    return xpathResult.booleanValue;
+  };
 };
 
 exports.singleNodeValueInternal = function (xpathResult) {
-  return xpathResult.singleNodeValue;
+  return function () { // Effect thunk
+    return xpathResult.singleNodeValue;
+  };
 };
 
 exports.invalidIteratorState = function (xpathResult) {
@@ -48,16 +58,22 @@ exports.invalidIteratorState = function (xpathResult) {
 };
 
 exports.snapshotLengthInternal = function (xpathResult) {
-  return xpathResult.snapshotLength;
+  return function () { // Effect thunk
+    return xpathResult.snapshotLength;
+  };
 };
 
 exports.iterateNextInternal = function (xpathResult) {
-  return xpathResult.iterateNext;
+  return function () { // Effect thunk
+    return xpathResult.iterateNext;
+  };
 };
 
 exports.snapshotItemInternal = function (xpathResult) {
   return function (index) {
-    return xpathResult.snapshotItem(index);
+    return function () { // Effect thunk
+      return xpathResult.snapshotItem(index);
+    };
   };
 };
 

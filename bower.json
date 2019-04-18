@@ -22,6 +22,6 @@
   "devDependencies": {
     "purescript-test-unit": "^15.0.0",
     "purescript-console": "^4.2.0",
-    "purescript-dom-parser": "bbarker/purescript-dom-parser#a7b68a787783a6028b9648a297ff3933c0ec0447"
+    "purescript-dom-parser": "bbarker/purescript-dom-parser#9c91afbd752f73b6f33c5c69cb541e3c4c6bf3a9"
   }
 }

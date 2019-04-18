@@ -22,13 +22,13 @@ import Web.DOM.Document.XPath            as XP
 import Web.DOM.Document.XPath.ResultType as RT
 import Web.DOM.Node                      (nodeName)
 
-parseAtomFeedDoc :: DOMParser -> Document
+parseAtomFeedDoc :: DOMParser -> Effect Document
 parseAtomFeedDoc dp = parseXMLFromString TD.atomFeedXml dp
 
-parseCatalogDoc :: DOMParser -> Document
+parseCatalogDoc :: DOMParser -> Effect Document
 parseCatalogDoc dp = parseXMLFromString TD.cdCatalogXml dp
 
-parseNoteDoc :: DOMParser -> Document
+parseNoteDoc :: DOMParser -> Effect Document
 parseNoteDoc dp = parseXMLFromString TD.noteXml dp
 
 
@@ -42,10 +42,10 @@ main = runTest do
     test "note.xml and catalog.xml" do
       domParser <- liftEffect $ makeDOMParser
 
-      noteDoc <- pure $ parseNoteDoc domParser
+      noteDoc <- liftEffect $ parseNoteDoc domParser
       note <- pure $ toNode noteDoc
 
-      catalogDoc <- pure $ parseCatalogDoc domParser
+      catalogDoc <- liftEffect $ parseCatalogDoc domParser
       catalog <- pure $ toNode catalogDoc
 
       tlog $ "string type is: "
@@ -88,7 +88,7 @@ main = runTest do
     test "atom.xml" do
       domParser <- liftEffect $ makeDOMParser
 
-      atomFeedDoc <- pure $ parseAtomFeedDoc domParser
+      atomFeedDoc <-liftEffect $ parseAtomFeedDoc domParser
       atomFeed <- pure $ toNode atomFeedDoc
 
       atomEntriesRes <- liftEffect $ XP.evaluate
