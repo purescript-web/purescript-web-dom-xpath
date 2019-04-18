@@ -1,0 +1,27 @@
+{
+  "name": "purescript-web-dom-xpath",
+  "homepage": "https://github.com/purescript-web/purescript-web-dom-xpath",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/purescript-web/purescript-web-dom-xpath.git"
+  },
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "node_modules",
+    "output",
+    "bower.json",
+    "package.json"
+  ],
+  "dependencies": {
+    "purescript-naturals": "^3.0.0",
+    "purescript-web-events": "^2.0.0",
+    "purescript-web-dom": "^2.0.0"
+  },
+  "devDependencies": {
+    "purescript-test-unit": "^15.0.0",
+    "purescript-console": "^4.2.0",
+    "purescript-dom-parser": "bbarker/purescript-dom-parser#a7b68a787783a6028b9648a297ff3933c0ec0447"
+  }
+}
