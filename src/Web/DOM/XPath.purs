@@ -13,7 +13,6 @@ import Web.DOM.Element                        as Elem
 import Web.DOM.Node                           (Node, ownerDocument)
 import Web.DOM.Document.XPath.ResultType      (ResultType)
 
-foreign import data XPathEvaluator :: Type
 foreign import data NSResolver :: Type
 foreign import data XPathResult :: Type
 
