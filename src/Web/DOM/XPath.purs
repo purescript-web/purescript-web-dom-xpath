@@ -81,7 +81,7 @@ lookupNamespaceURI :: NSResolver -> String -> Maybe String
 lookupNamespaceURI nsRes prefix = toMaybe $ lookupNamespaceURIInternal nsRes prefix
 
 -- | Same interface as `createNSResolver`, but will use the owner
--- document as the nodeResolver if it exists. See [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Introduction_to_using_XPath_in_JavaScript#Implementing_a_Default_Namespace_Resolver).
+-- | document as the nodeResolver if it exists. See [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Introduction_to_using_XPath_in_JavaScript#Implementing_a_Default_Namespace_Resolver).
 defaultNSResolver :: Node -> Document -> Effect NSResolver
 defaultNSResolver nodeRes doc = do
   ownerDoc <- ownerDocument nodeRes
