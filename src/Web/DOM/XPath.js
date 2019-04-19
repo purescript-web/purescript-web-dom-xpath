@@ -91,3 +91,9 @@ exports.createNSResolver = function (nodeResolver) {
     doc.createNSResolver(nodeResolver);
   };
 };
+
+exports.lookupNamespaceURIInternal = function (nsResolver) {
+  return function (prefix) {
+    nsResolver.lookupNamespaceURI(prefix);
+  };
+};

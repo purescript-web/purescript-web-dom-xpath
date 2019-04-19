@@ -264,7 +264,7 @@ metajeloXml = """<?xml version="1.0" encoding="UTF-8"?>
                 <institutionName>pKhb</institutionName>
                 <institutionType>commercial</institutionType>
                 <superOrganizationName>DHv5J4LquWfN42iu1a</superOrganizationName>
-                <institutionContact institutionContactType="dataCustodian">foo@bar.edu</institutionContact>
+                <institutionContact institutionContactType="dataCustodian">foo@baz.edu</institutionContact>
                 <institutionSustainability>
                     <missionStatementURL>http://akbNcujU/</missionStatementURL>
                     <fundingStatementURL>http://tdjmeVUQ/</fundingStatementURL>

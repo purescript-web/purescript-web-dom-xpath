@@ -3,14 +3,14 @@ module Test.Main where
 import Prelude
 
 import Data.Int                          (toNumber)
-import Data.Maybe                        (Maybe(..))
+import Data.Maybe                        (Maybe(..), fromMaybe)
 import Data.Natural                      (intToNat)
 import Debug.Trace                       (traceM)
 import Effect                            (Effect)
 import Effect.Aff                        (Aff)
 import Effect.Class                      (liftEffect)
 import Effect.Console                    (logShow)
-
+import Foreign                           (isUndefined, isNull, unsafeToForeign)
 import Test.Data                         as TD
 import Test.Unit                         (suite, test)
 import Test.Unit.Main                    (runTest)
@@ -21,7 +21,8 @@ import Web.DOM.DOMParser                 (DOMParser, makeDOMParser, parseXMLFrom
 import Web.DOM.Document.XPath            (NSResolver)
 import Web.DOM.Document.XPath            as XP
 import Web.DOM.Document.XPath.ResultType as RT
-import Web.DOM.Node                      (nodeName)
+import Web.DOM.Element                   (Element, fromNode, getAttribute)
+import Web.DOM.Node                      (Node, nodeName)
 
 parseAtomFeedDoc :: DOMParser -> Effect Document
 parseAtomFeedDoc dp = parseXMLFromString TD.atomFeedXml dp
@@ -39,9 +40,30 @@ atomResolver :: NSResolver
 atomResolver = XP.customNSResolver dummyAtomRes
   where dummyAtomRes _ = "http://www.w3.org/2005/Atom"
 
-metajeloResolver :: NSResolver
-metajeloResolver = XP.customNSResolver dummMJRes
-  where dummMJRes _ = "http://ourdomain.cornell.edu/reuse/v.01"
+-- metajeloResolver :: NSResolver
+-- metajeloResolver = XP.customNSResolver dummMJRes
+--   where dummMJRes _ = "http://ourdomain.cornell.edu/reuse/v.01"
+
+getMetajeloResolver :: Node -> Document -> Effect NSResolver
+getMetajeloResolver node doc = do
+  nsResolver <- XP.defaultNSResolver node doc
+  traceM nsResolver
+  nodeEleMay :: Maybe Element <- pure $ fromNode node
+  defaultNS :: String <- getDefaultNS nodeEleMay
+  pure $ XP.customNSResolver $ makeMjNSResFun nsResolver defaultNS
+  where
+    getDefaultNS :: Maybe Element -> Effect String
+    getDefaultNS mayElem = do
+      case mayElem of
+        Nothing -> pure $ guessedNS
+        Just elem -> map nsOrGuess (getAttribute "xmlns" elem)
+    guessedNS = "http://ourdomain.cornell.edu/reuse/v.01"
+    nsOrGuess :: Maybe String -> String
+    nsOrGuess nsMay = fromMaybe guessedNS nsMay
+    makeMjNSResFun :: NSResolver -> String -> String -> String
+    makeMjNSResFun nsr defNS prefix = case XP.lookupNamespaceURI nsr prefix of
+      Nothing -> defNS
+      Just ns -> ns
 
 main :: Effect Unit
 main = runTest do
@@ -92,6 +114,31 @@ main = runTest do
       Assert.equal (intToNat 26) cdsSnapLen
 
   suite "namespaced tests" do
+    test "NS resolver construction" do
+      domParser <- liftEffect $ makeDOMParser
+
+      customRes <- pure $ XP.customNSResolver (\x -> "http://foo.com")
+
+      Assert.assertFalse "custom NS resolver shouldn't be undefined"
+        (isUndefined $ unsafeToForeign customRes)
+      Assert.assertFalse "custom NS resolver shouldn't be null"
+        (isNull $ unsafeToForeign customRes)
+
+      atomFeedDoc <-liftEffect $ parseAtomFeedDoc domParser
+      atomFeed <- pure $ toNode atomFeedDoc
+
+      createdNSResolver <- pure $ XP.createNSResolver atomFeed atomFeedDoc
+      Assert.assertFalse "created NS resolver shouldn't be undefined"
+        (isUndefined $ unsafeToForeign createdNSResolver)
+      Assert.assertFalse "created NS resolver shouldn't be null"
+        (isNull $ unsafeToForeign createdNSResolver)
+
+      defNSResolver <- liftEffect $ XP.defaultNSResolver atomFeed atomFeedDoc
+      Assert.assertFalse "default NS resolver shouldn't be undefined"
+        (isUndefined $ unsafeToForeign defNSResolver)
+      Assert.assertFalse "default NS resolver shouldn't be null"
+        (isNull $ unsafeToForeign defNSResolver)
+
     test "atom.xml" do
       domParser <- liftEffect $ makeDOMParser
 
@@ -115,26 +162,12 @@ main = runTest do
       metajeloDoc <-liftEffect $ parseMetajeloDoc domParser
       metajelo <- pure $ toNode metajeloDoc
 
-      defaultNSResolver <- liftEffect $ XP.defaultNSResolver metajelo metajeloDoc
-
-      metajeloXmlnsRes <- liftEffect $ XP.evaluate
-        "/*/namespace::*"
-        metajelo
-        Nothing
-        RT.any_type
-        Nothing
-        metajeloDoc
-      traceM metajeloXmlnsRes
-      -- metajeloXmlns <- liftEffect $ XP.iterateNext metajeloXmlnsRes
-      -- traceM metajeloXmlns
-      -- tlog $ "got metajelo xmlns" <> metajeloXmlns
-      -- Assert.equal RT.string_type (XP.resultType metajeloXmlnsRes)
-      -- Assert.equal "http://ourdomain.cornell.edu/reuse/v.01" metajeloXmlns
+      mjNSresolver <- liftEffect $ getMetajeloResolver metajelo metajeloDoc
 
       metajeloIdRes <- liftEffect $ XP.evaluate
-        "/record/identifier"
+        "/foo:record/foo:identifier"
         metajelo
-        (Just defaultNSResolver)
+        (Just mjNSresolver)
         RT.string_type
         Nothing
         metajeloDoc
