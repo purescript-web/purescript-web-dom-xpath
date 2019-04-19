@@ -5,7 +5,7 @@ import Prelude
 import Data.Int                          (toNumber)
 import Data.Maybe                        (Maybe(..), fromMaybe)
 import Data.Natural                      (intToNat)
-import Debug.Trace                       (traceM)
+-- import Debug.Trace                       (traceM)
 import Effect                            (Effect)
 import Effect.Aff                        (Aff)
 import Effect.Class                      (liftEffect)
@@ -47,7 +47,7 @@ atomResolver = XP.customNSResolver dummyAtomRes
 getMetajeloResolver :: Node -> Document -> Effect NSResolver
 getMetajeloResolver node doc = do
   nsResolver <- XP.defaultNSResolver node doc
-  traceM nsResolver
+  -- traceM nsResolver
   nodeEleMay :: Maybe Element <- pure $ fromNode node
   defaultNS :: String <- getDefaultNS nodeEleMay
   pure $ XP.customNSResolver $ makeMjNSResFun nsResolver defaultNS

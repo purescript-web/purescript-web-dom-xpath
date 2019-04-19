@@ -88,12 +88,12 @@ exports.customNSResolver = function (customRes) {
 
 exports.createNSResolver = function (nodeResolver) {
   return function (doc) {
-    doc.createNSResolver(nodeResolver);
+    return doc.createNSResolver(nodeResolver);
   };
 };
 
 exports.lookupNamespaceURIInternal = function (nsResolver) {
   return function (prefix) {
-    nsResolver.lookupNamespaceURI(prefix);
+    return nsResolver.lookupNamespaceURI(prefix);
   };
 };
