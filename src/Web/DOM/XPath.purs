@@ -7,8 +7,9 @@ import Data.Maybe                             (Maybe(..))
 import Data.Nullable                          (Nullable, toMaybe, toNullable)
 import Data.Natural                           (Natural, intToNat, natToInt)
 import Effect                                 (Effect)
-import Web.DOM.Document                       (Document, documentElement, fromNode)
-import Web.DOM.Element                        (toNode)
+import Web.DOM.Document                       (Document, documentElement)
+import Web.DOM.Document                       as Doc
+import Web.DOM.Element                        as Elem
 import Web.DOM.Node                           (Node, ownerDocument)
 import Web.DOM.Document.XPath.ResultType      (ResultType)
 
@@ -81,8 +82,16 @@ defaultNSResolver :: Node -> Document -> Effect NSResolver
 defaultNSResolver nodeRes doc = do
   ownerDoc <- ownerDocument nodeRes
   nodeResFinal <- case ownerDoc of
-    Nothing -> case (fromNode nodeRes) of
+    Nothing -> case (Doc.fromNode nodeRes) of
       Nothing -> pure nodeRes
-      Just nodeResEl ->  documentElement (toNode nodeResEl)
-    Just od -> documentElement od
-  createNSResolver nodeResFinal doc
+      Just nodeRelAsDoc -> docElemOrDefault nodeRelAsDoc
+    Just od -> docElemOrDefault od
+  pure $ createNSResolver nodeResFinal doc
+  where
+    docElemOrDefault :: Document -> Effect Node
+    docElemOrDefault dc = do
+      docElMay <- documentElement dc
+      pure $ case docElMay of
+        Nothing -> nodeRes
+        Just docEl -> Elem.toNode docEl
+
