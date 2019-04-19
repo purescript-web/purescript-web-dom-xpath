@@ -65,7 +65,7 @@ exports.snapshotLengthInternal = function (xpathResult) {
 
 exports.iterateNextInternal = function (xpathResult) {
   return function () { // Effect thunk
-    return xpathResult.iterateNext;
+    return xpathResult.iterateNext();
   };
 };
 

@@ -112,11 +112,24 @@ main = runTest do
     test "metajelo.xml" do
       domParser <- liftEffect $ makeDOMParser
 
-
       metajeloDoc <-liftEffect $ parseMetajeloDoc domParser
       metajelo <- pure $ toNode metajeloDoc
 
       defaultNSResolver <- liftEffect $ XP.defaultNSResolver metajelo metajeloDoc
+
+      metajeloXmlnsRes <- liftEffect $ XP.evaluate
+        "/*/namespace::*"
+        metajelo
+        Nothing
+        RT.any_type
+        Nothing
+        metajeloDoc
+      traceM metajeloXmlnsRes
+      -- metajeloXmlns <- liftEffect $ XP.iterateNext metajeloXmlnsRes
+      -- traceM metajeloXmlns
+      -- tlog $ "got metajelo xmlns" <> metajeloXmlns
+      -- Assert.equal RT.string_type (XP.resultType metajeloXmlnsRes)
+      -- Assert.equal "http://ourdomain.cornell.edu/reuse/v.01" metajeloXmlns
 
       metajeloIdRes <- liftEffect $ XP.evaluate
         "/record/identifier"
@@ -125,7 +138,6 @@ main = runTest do
         RT.string_type
         Nothing
         metajeloDoc
-      traceM metajeloIdRes -- DEBUG
       metajeloId <- liftEffect $ XP.stringValue metajeloIdRes
       tlog $ "got metajelo id" <> metajeloId
       Assert.equal RT.string_type (XP.resultType metajeloIdRes)
