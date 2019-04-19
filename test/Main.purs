@@ -112,13 +112,16 @@ main = runTest do
     test "metajelo.xml" do
       domParser <- liftEffect $ makeDOMParser
 
+
       metajeloDoc <-liftEffect $ parseMetajeloDoc domParser
       metajelo <- pure $ toNode metajeloDoc
+
+      defaultNSResolver <- liftEffect $ XP.defaultNSResolver metajelo metajeloDoc
 
       metajeloIdRes <- liftEffect $ XP.evaluate
         "/record/identifier"
         metajelo
-        (Just metajeloResolver)
+        (Just defaultNSResolver)
         RT.string_type
         Nothing
         metajeloDoc
