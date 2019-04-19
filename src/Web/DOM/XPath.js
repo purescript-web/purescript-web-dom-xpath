@@ -65,7 +65,7 @@ exports.snapshotLengthInternal = function (xpathResult) {
 
 exports.iterateNextInternal = function (xpathResult) {
   return function () { // Effect thunk
-    return xpathResult.iterateNext;
+    return xpathResult.iterateNext();
   };
 };
 
@@ -88,6 +88,12 @@ exports.customNSResolver = function (customRes) {
 
 exports.createNSResolver = function (nodeResolver) {
   return function (doc) {
-    doc.createNSResolver(nodeResolver);
+    return doc.createNSResolver(nodeResolver);
+  };
+};
+
+exports.lookupNamespaceURIInternal = function (nsResolver) {
+  return function (prefix) {
+    return nsResolver.lookupNamespaceURI(prefix);
   };
 };
