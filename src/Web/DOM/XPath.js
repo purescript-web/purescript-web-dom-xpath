@@ -97,3 +97,10 @@ exports.lookupNamespaceURIInternal = function (nsResolver) {
     return nsResolver.lookupNamespaceURI(prefix);
   };
 };
+
+// exports._makeEmptyDoc = function () {  // Effect thunk
+//     var doc = (new DOMParser()).parseFromString('<dummy/>', 'application/xml');
+//     doc.removeChild(doc.documentElement);
+//     return doc;
+// };
+

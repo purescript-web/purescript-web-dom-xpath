@@ -2,16 +2,19 @@ module Web.DOM.Document.XPath where
 
 import Prelude
 
+import Data.Array                             (catMaybes, range)
 import Data.Int                               (round, toNumber)
 import Data.Maybe                             (Maybe(..))
 import Data.Nullable                          (Nullable, toMaybe, toNullable)
 import Data.Natural                           (Natural, intToNat, natToInt)
+import Data.Traversable                       (sequence)
 import Effect                                 (Effect)
 import Web.DOM.Document                       (Document, documentElement)
 import Web.DOM.Document                       as Doc
 import Web.DOM.Element                        as Elem
 import Web.DOM.Node                           (Node, ownerDocument)
 import Web.DOM.Document.XPath.ResultType      (ResultType)
+import Web.DOM.Document.XPath.ResultType      as RT
 
 foreign import data NSResolver :: Type
 foreign import data XPathResult :: Type
@@ -69,6 +72,37 @@ snapshotItem :: XPathResult -> Natural -> Effect (Maybe Node)
 snapshotItem xpres ix = map toMaybe $
   snapshotItemInternal xpres (toNumber $ natToInt $ ix)
 
+-- | High level wrapper around `snapshotItem` and `snapshotLength`
+-- | that directly returns an `Array` of `Node`s.
+snapshot :: XPathResult -> Effect (Array Node)
+snapshot xpres = case snapMay of
+  Nothing -> pure mempty
+  Just eArray -> eArray
+  where
+    snapTypMay = RT.res2SnapType $ resultType xpres
+    snapMay = map snapshotInternal snapTypMay
+    nodeAtIdx :: Natural -> Effect (Maybe Node)
+    nodeAtIdx = snapshotItem xpres
+    snapshotInternal :: RT.SnapshotType ->  Effect (Array Node)
+    snapshotInternal snapType = do
+      nNodes <- snapshotLength xpres
+      nNodesInt <- pure $ natToInt nNodes
+      -- nodeArray <- pure $ replicate nNodesInt _emptyNode
+      indices <- pure $ map intToNat $ range 0 (nNodesInt - 1)
+      nodeArray <- sequence $ map nodeAtIdx indices
+      -- TODO: currently this is likely slow due to not using state
+      pure $ catMaybes nodeArray
+
+-- -- | Unsafely provided for performance in e.g. allocation of `Array`s.
+-- _emptyDoc :: Document
+-- _emptyDoc = unsafePerformEffect _makeEmptyDoc
+
+-- foreign import _makeEmptyDoc :: Effect Document
+
+-- -- | Unsafely provided for performance in e.g. allocation of `Array`s.
+-- _emptyNode :: Node
+-- _emptyNode = toNode _emptyDoc
+
   --- namespace resolver functions ---
 
 foreign import customNSResolver :: (String -> String) -> NSResolver
@@ -97,4 +131,3 @@ defaultNSResolver nodeRes doc = do
       pure $ case docElMay of
         Nothing -> nodeRes
         Just docEl -> Elem.toNode docEl
-

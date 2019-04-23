@@ -2,8 +2,9 @@ module Test.Main where
 
 import Prelude
 
+import Data.Array                        ((!!), length)
 import Data.Int                          (toNumber)
-import Data.Maybe                        (Maybe(..), fromMaybe)
+import Data.Maybe                        (Maybe(..), fromJust, fromMaybe)
 import Data.Natural                      (intToNat)
 -- import Debug.Trace                       (traceM)
 import Effect                            (Effect)
@@ -11,6 +12,7 @@ import Effect.Aff                        (Aff)
 import Effect.Class                      (liftEffect)
 import Effect.Console                    (logShow)
 import Foreign                           (isUndefined, isNull, unsafeToForeign)
+import Partial.Unsafe                    (unsafePartial)
 import Test.Data                         as TD
 import Test.Unit                         (suite, test)
 import Test.Unit.Main                    (runTest)
@@ -65,6 +67,17 @@ getMetajeloResolver node doc = do
       Nothing -> defNS
       Just ns -> ns
 
+mkCdYear :: Document -> Node -> Aff String
+mkCdYear doc node = liftEffect $ do
+  cdRes <- XP.evaluate
+    "YEAR"
+    node
+    Nothing
+    RT.string_type
+    Nothing
+    doc
+  XP.stringValue cdRes
+
 main :: Effect Unit
 main = runTest do
   suite "non-namespaced tests" do
@@ -112,6 +125,15 @@ main = runTest do
       cdsSnapLen <- liftEffect $ XP.snapshotLength cdsSnapRes
       tlog $ "got " <> (show cdsSnapLen) <> " CDs"
       Assert.equal (intToNat 26) cdsSnapLen
+      cdsSnap <- liftEffect $ XP.snapshot cdsSnapRes
+      cdYearEval <- pure $ mkCdYear catalogDoc
+      Assert.equal 26 (length cdsSnap)
+      year0 <- cdYearEval $ unsafePartial $ fromJust $ cdsSnap !! 0
+      Assert.equal "1985" year0
+      year1 <- cdYearEval $ unsafePartial $ fromJust $ cdsSnap !! 1
+      Assert.equal "1988" year1
+      year25 <- cdYearEval $ unsafePartial $ fromJust $ cdsSnap !! 25
+      Assert.equal "1987" year25
 
   suite "namespaced tests" do
     test "NS resolver construction" do
