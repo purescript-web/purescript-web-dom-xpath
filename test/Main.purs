@@ -68,15 +68,12 @@ getMetajeloResolver node doc = do
       Just ns -> ns
 
 mkCdYear :: Document -> Node -> Aff String
-mkCdYear doc node = liftEffect $ do
-  cdRes <- XP.evaluate
-    "YEAR"
-    node
-    Nothing
-    RT.string_type
-    Nothing
-    doc
-  XP.stringValue cdRes
+mkCdYear doc node = liftEffect $ XP.evaluateString
+  "YEAR"
+  node
+  Nothing
+  Nothing
+  doc
 
 main :: Effect Unit
 main = runTest do

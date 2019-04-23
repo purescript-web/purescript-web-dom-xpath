@@ -30,6 +30,42 @@ evaluate ::
 evaluate xpath ctxt nsres resType res doc =
   evaluateInternal xpath ctxt (toNullable nsres) resType (toNullable res) doc
 
+-- | Convenience function to avoid two funciton calls and possibly mismatched types.
+evaluateNumber ::
+  String
+  -> Node
+  -> Maybe NSResolver
+  -> Maybe XPathResult
+  -> Document
+  -> Effect Number
+evaluateNumber xpath ctxt nsres res doc = do
+  xr <- evaluateInternal xpath ctxt (toNullable nsres) RT.number_type (toNullable res) doc
+  numberValue xr
+
+-- | Convenience function to avoid two funciton calls and possibly mismatched types.
+evaluateString ::
+  String
+  -> Node
+  -> Maybe NSResolver
+  -> Maybe XPathResult
+  -> Document
+  -> Effect String
+evaluateString xpath ctxt nsres res doc = do
+  xr <- evaluateInternal xpath ctxt (toNullable nsres) RT.string_type (toNullable res) doc
+  stringValue xr
+
+-- | Convenience function to avoid two funciton calls and possibly mismatched types.
+evaluateBoolean ::
+  String
+  -> Node
+  -> Maybe NSResolver
+  -> Maybe XPathResult
+  -> Document
+  -> Effect Boolean
+evaluateBoolean xpath ctxt nsres res doc = do
+  xr <- evaluateInternal xpath ctxt (toNullable nsres) RT.boolean_type (toNullable res) doc
+  booleanValue xr
+
 foreign import evaluateInternal ::
   String
   -> Node
@@ -72,7 +108,8 @@ snapshotItem :: XPathResult -> Natural -> Effect (Maybe Node)
 snapshotItem xpres ix = map toMaybe $
   snapshotItemInternal xpres (toNumber $ natToInt $ ix)
 
--- | High level wrapper around `snapshotItem` and `snapshotLength`
+-- | High level wrapper around [snapshotItem](#v:snapshotItem)
+-- | and [snapshotLength](#v:snapshotLength)
 -- | that directly returns an `Array` of `Node`s.
 snapshot :: XPathResult -> Effect (Array Node)
 snapshot xpres = case snapMay of
