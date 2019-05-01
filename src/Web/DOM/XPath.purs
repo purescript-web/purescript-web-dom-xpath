@@ -86,6 +86,8 @@ foreign import numberValue :: XPathResult -> Effect Number
 
 foreign import stringValue :: XPathResult -> Effect String
 
+-- | Not to be confused with retrieving xs:boolean values,
+-- | this is to be used with the XPath boolean() function call.
 foreign import booleanValue :: XPathResult -> Effect Boolean
 
 foreign import singleNodeValueInternal :: XPathResult -> Effect (Nullable Node)

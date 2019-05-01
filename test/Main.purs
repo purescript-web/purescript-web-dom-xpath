@@ -195,5 +195,33 @@ main = runTest do
       Assert.equal RT.string_type (XP.resultType metajeloIdRes)
       Assert.equal "OjlTjf" metajeloId
 
+      prod0pol0xpath <- pure $
+        "/x:record/x:supplementaryProducts/x:supplementaryProduct[1]" <>
+        "/x:location/x:institutionPolicies/x:institutionPolicy[1]"
+
+      mjProd0Pol0Res <- liftEffect $ XP.evaluate
+        (prod0pol0xpath <>  "/x:refPolicy")
+        metajelo
+        (Just mjNSresolver)
+        RT.string_type
+        Nothing
+        metajeloDoc
+      mjProd0Pol0 <- liftEffect $ XP.stringValue mjProd0Pol0Res
+      tlog $ "got metajelo ref policy " <> mjProd0Pol0
+      Assert.equal RT.string_type (XP.resultType mjProd0Pol0Res)
+      Assert.equal "http://skGHargw/" mjProd0Pol0
+      --
+      mjProd0Pol0AppliesRes <- liftEffect $ XP.evaluate
+        (prod0pol0xpath <>  "/@appliesToProduct")
+        metajelo
+        (Just mjNSresolver)
+        RT.string_type
+        Nothing
+        metajeloDoc
+      mjProd0Pol0Applies <- liftEffect $ XP.stringValue mjProd0Pol0AppliesRes
+      tlog $ "got metajelo policy appliesToProduct: " <> (show mjProd0Pol0Applies)
+      Assert.equal RT.string_type (XP.resultType mjProd0Pol0AppliesRes)
+      Assert.equal "0" mjProd0Pol0Applies
+
 tlog :: forall a. Show a => a -> Aff Unit
 tlog = liftEffect <<< logShow
