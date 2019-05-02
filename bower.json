@@ -16,7 +16,6 @@
   ],
   "dependencies": {
     "purescript-naturals": "^3.0.0",
-    "purescript-web-events": "^2.0.0",
     "purescript-web-dom": "^2.0.0"
   },
   "devDependencies": {
