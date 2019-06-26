@@ -3,6 +3,7 @@ module Test.Main where
 import Prelude
 
 import Data.Array                        ((!!), length)
+import Data.Either                       (fromRight)
 import Data.Int                          (toNumber)
 import Data.Maybe                        (Maybe(..), fromJust, fromMaybe)
 import Data.Natural                      (intToNat)
@@ -27,16 +28,20 @@ import Web.DOM.Element                   (Element, fromNode, getAttribute)
 import Web.DOM.Node                      (Node, nodeName)
 
 parseAtomFeedDoc :: DOMParser -> Effect Document
-parseAtomFeedDoc dp = parseXMLFromString TD.atomFeedXml dp
+parseAtomFeedDoc dp = unsafePartial $ map fromRight $
+  parseXMLFromString TD.atomFeedXml dp
 
 parseCatalogDoc :: DOMParser -> Effect Document
-parseCatalogDoc dp = parseXMLFromString TD.cdCatalogXml dp
+parseCatalogDoc dp = unsafePartial $ map fromRight $
+  parseXMLFromString TD.cdCatalogXml dp
 
 parseNoteDoc :: DOMParser -> Effect Document
-parseNoteDoc dp = parseXMLFromString TD.noteXml dp
+parseNoteDoc dp = unsafePartial $ map fromRight $
+  parseXMLFromString TD.noteXml dp
 
 parseMetajeloDoc :: DOMParser -> Effect Document
-parseMetajeloDoc dp = parseXMLFromString TD.metajeloXml dp
+parseMetajeloDoc dp = unsafePartial $ map fromRight $
+  parseXMLFromString TD.metajeloXml dp
 
 atomResolver :: NSResolver
 atomResolver = XP.customNSResolver dummyAtomRes

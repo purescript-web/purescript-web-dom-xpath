@@ -16,12 +16,12 @@
   ],
   "dependencies": {
     "purescript-naturals": "^3.0.0",
-    "purescript-web-dom": "^2.0.0"
+    "purescript-web-dom": "^3.0.0"
   },
   "devDependencies": {
     "purescript-test-unit": "^15.0.0",
     "purescript-console": "^4.2.0",
-    "purescript-dom-parser": "bbarker/purescript-dom-parser#9c91afbd752f73b6f33c5c69cb541e3c4c6bf3a9",
+    "purescript-web-dom-parser": "^6.0.0",
     "purescript-debug": "^4.0.0",
     "purescript-foreign": "^5.0.0"
   }

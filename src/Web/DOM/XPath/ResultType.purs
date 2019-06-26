@@ -32,8 +32,8 @@ snap2ResType OrderedSnapshotType = ordered_node_snapshot_type
 
 -- | Inverse of `snap2ResType`.
 res2SnapType :: ResultType -> Maybe SnapshotType
-res2SnapType unordered_node_snapshot_type = Just UnorderedSnapshotType
-res2SnapType ordered_node_snapshot_type = Just OrderedSnapshotType
+res2SnapType r | r == unordered_node_snapshot_type = Just UnorderedSnapshotType
+res2SnapType r | r == ordered_node_snapshot_type = Just OrderedSnapshotType
 res2SnapType _ = Nothing
 
 data IteratorType
@@ -47,6 +47,6 @@ iter2ResType OrderedIteratorType = ordered_node_iterator_type
 
 -- | Inverse of `iter2ResType`.
 res2IterType :: ResultType -> Maybe IteratorType
-res2IterType unordered_node_iterator_type = Just UnorderedIteratorType
-res2IterType ordered_node_iterator_type = Just OrderedIteratorType
+res2IterType r | r == unordered_node_iterator_type = Just UnorderedIteratorType
+res2IterType r | r == ordered_node_iterator_type = Just OrderedIteratorType
 res2IterType _ = Nothing
