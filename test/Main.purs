@@ -80,8 +80,8 @@ mkCdYear doc node = liftEffect $ XP.evaluateString
   Nothing
   doc
 
-main :: Effect Unit
-main = runTest do
+main :: { browser :: Boolean } -> Effect Unit
+main { browser } = runTest do
   suite "non-namespaced tests" do
     test "note.xml and catalog.xml" do
       domParser <- liftEffect $ makeDOMParser
@@ -148,22 +148,23 @@ main = runTest do
       Assert.assertFalse "custom NS resolver shouldn't be null"
         (isNull $ unsafeToForeign customRes)
 
-      atomFeedDoc <-liftEffect $ parseAtomFeedDoc domParser
-      atomFeed <- pure $ toNode atomFeedDoc
+      when browser $ do
+        atomFeedDoc <- liftEffect $ parseAtomFeedDoc domParser
+        atomFeed <- pure $ toNode atomFeedDoc
 
-      createdNSResolver <- pure $ XP.createNSResolver atomFeed atomFeedDoc
-      Assert.assertFalse "created NS resolver shouldn't be undefined"
-        (isUndefined $ unsafeToForeign createdNSResolver)
-      Assert.assertFalse "created NS resolver shouldn't be null"
-        (isNull $ unsafeToForeign createdNSResolver)
+        createdNSResolver <- pure $ XP.createNSResolver atomFeed atomFeedDoc
+        Assert.assertFalse "created NS resolver shouldn't be undefined"
+          (isUndefined $ unsafeToForeign createdNSResolver)
+        Assert.assertFalse "created NS resolver shouldn't be null"
+          (isNull $ unsafeToForeign createdNSResolver)
 
-      defNSResolver <- liftEffect $ XP.defaultNSResolver atomFeed atomFeedDoc
-      Assert.assertFalse "default NS resolver shouldn't be undefined"
-        (isUndefined $ unsafeToForeign defNSResolver)
-      Assert.assertFalse "default NS resolver shouldn't be null"
-        (isNull $ unsafeToForeign defNSResolver)
+        defNSResolver <- liftEffect $ XP.defaultNSResolver atomFeed atomFeedDoc
+        Assert.assertFalse "default NS resolver shouldn't be undefined"
+          (isUndefined $ unsafeToForeign defNSResolver)
+        Assert.assertFalse "default NS resolver shouldn't be null"
+          (isNull $ unsafeToForeign defNSResolver)
 
-    test "atom.xml" do
+    test "atom.xml" $ when browser do
       domParser <- liftEffect $ makeDOMParser
 
       atomFeedDoc <-liftEffect $ parseAtomFeedDoc domParser
@@ -198,7 +199,7 @@ main = runTest do
       metajeloId <- liftEffect $ XP.stringValue metajeloIdRes
       tlog $ "got metajelo id" <> metajeloId
       Assert.equal RT.string_type (XP.resultType metajeloIdRes)
-      Assert.equal "OjlTjf" metajeloId
+      when browser $ Assert.equal "OjlTjf" metajeloId
 
       prod0pol0xpath <- pure $
         "/x:record/x:supplementaryProducts/x:supplementaryProduct[1]" <>
@@ -214,7 +215,7 @@ main = runTest do
       mjProd0Pol0 <- liftEffect $ XP.stringValue mjProd0Pol0Res
       tlog $ "got metajelo ref policy " <> mjProd0Pol0
       Assert.equal RT.string_type (XP.resultType mjProd0Pol0Res)
-      Assert.equal "http://skGHargw/" mjProd0Pol0
+      when browser $ Assert.equal "http://skGHargw/" mjProd0Pol0
       --
       mjProd0Pol0AppliesRes <- liftEffect $ XP.evaluate
         (prod0pol0xpath <>  "/@appliesToProduct")
@@ -226,7 +227,7 @@ main = runTest do
       mjProd0Pol0Applies <- liftEffect $ XP.stringValue mjProd0Pol0AppliesRes
       tlog $ "got metajelo policy appliesToProduct: " <> (show mjProd0Pol0Applies)
       Assert.equal RT.string_type (XP.resultType mjProd0Pol0AppliesRes)
-      Assert.equal "0" mjProd0Pol0Applies
+      when browser $ Assert.equal "0" mjProd0Pol0Applies
 
 tlog :: forall a. Show a => a -> Aff Unit
 tlog = liftEffect <<< logShow
