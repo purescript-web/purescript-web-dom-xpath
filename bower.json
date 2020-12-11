@@ -16,7 +16,7 @@
   ],
   "dependencies": {
     "purescript-naturals": "master",
-    "purescript-web-dom": "3 - 4"
+    "purescript-web-dom": "master"
   },
   "devDependencies": {
     "purescript-test-unit": "master",
