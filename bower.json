@@ -15,14 +15,14 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-naturals": "^3.0.0",
-    "purescript-web-dom": "3 - 4"
+    "purescript-naturals": "master",
+    "purescript-web-dom": "master"
   },
   "devDependencies": {
-    "purescript-test-unit": "^15.0.0",
-    "purescript-console": "^4.2.0",
-    "purescript-web-dom-parser": "^6.0.0",
-    "purescript-debug": "^4.0.0",
-    "purescript-foreign": "^5.0.0"
+    "purescript-assert": "master",
+    "purescript-aff": "main",
+    "purescript-console": "master",
+    "purescript-web-dom-parser": "master",
+    "purescript-foreign": "master"
   }
 }
