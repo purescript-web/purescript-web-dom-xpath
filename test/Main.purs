@@ -76,7 +76,7 @@ getMetajeloResolver node doc = do
       Nothing -> defNS
       Just ns -> ns
 
-mkCdYear :: Document -> Node -> Aff String
+mkCdYear :: forall m. MonadEffect m => Document -> Node -> m String
 mkCdYear doc node = liftEffect $ XP.evaluateString
   "YEAR"
   node
@@ -260,5 +260,5 @@ main { browser } = launchAff_ $ flip runReaderT "" do
       shouldEqual RT.string_type (XP.resultType mjProd0Pol0AppliesRes)
       when browser $ shouldEqual "0" mjProd0Pol0Applies
 
-tlog :: forall a. Show a => a -> Aff Unit
+tlog :: forall a m. MonadEffect m => Show a => a -> m Unit
 tlog = liftEffect <<< logShow
