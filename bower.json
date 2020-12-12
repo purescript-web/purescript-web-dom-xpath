@@ -19,10 +19,10 @@
     "purescript-web-dom": "master"
   },
   "devDependencies": {
-    "purescript-test-unit": "master",
+    "purescript-assert": "master",
+    "purescript-aff": "main",
     "purescript-console": "master",
     "purescript-web-dom-parser": "master",
-    "purescript-debug": "master",
     "purescript-foreign": "master"
   }
 }

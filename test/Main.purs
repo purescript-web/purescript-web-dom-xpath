@@ -2,22 +2,23 @@ module Test.Main where
 
 import Prelude
 
+import Control.Monad.Reader.Trans (ReaderT(..), runReaderT)
+import Control.Monad.Reader.Class (class MonadReader, ask, local)
 import Data.Array                        ((!!), length)
 import Data.Either                       (fromRight)
 import Data.Int                          (toNumber)
+import Data.Either                       (Either(..), either)
 import Data.Maybe                        (Maybe(..), fromJust, fromMaybe)
 import Data.Natural                      (intToNat)
 -- import Debug.Trace                       (traceM)
 import Effect                            (Effect)
-import Effect.Aff                        (Aff)
-import Effect.Class                      (liftEffect)
-import Effect.Console                    (logShow)
+import Effect.Aff                        (Aff, launchAff_)
+import Effect.Class                      (class MonadEffect, liftEffect)
+import Effect.Console                    (logShow, log)
 import Foreign                           (isUndefined, isNull, unsafeToForeign)
-import Partial.Unsafe                    (unsafePartial)
+import Partial.Unsafe                    (unsafePartial, unsafeCrashWith)
 import Test.Data                         as TD
-import Test.Unit                         (suite, test)
-import Test.Unit.Main                    (runTest)
-import Test.Unit.Assert                  as Assert
+import Test.Assert as Assert
 
 import Web.DOM.Document                  (Document, toNode)
 import Web.DOM.DOMParser                 (DOMParser, makeDOMParser, parseXMLFromString)
@@ -27,20 +28,23 @@ import Web.DOM.Document.XPath.ResultType as RT
 import Web.DOM.Element                   (Element, fromNode, getAttribute)
 import Web.DOM.Node                      (Node, nodeName)
 
+unsafeFromRight :: forall l r. Either l r -> r
+unsafeFromRight = either (unsafeCrashWith "Value was not Left") identity
+
 parseAtomFeedDoc :: DOMParser -> Effect Document
-parseAtomFeedDoc dp = unsafePartial $ map fromRight $
+parseAtomFeedDoc dp = map unsafeFromRight $
   parseXMLFromString TD.atomFeedXml dp
 
 parseCatalogDoc :: DOMParser -> Effect Document
-parseCatalogDoc dp = unsafePartial $ map fromRight $
+parseCatalogDoc dp = map unsafeFromRight $
   parseXMLFromString TD.cdCatalogXml dp
 
 parseNoteDoc :: DOMParser -> Effect Document
-parseNoteDoc dp = unsafePartial $ map fromRight $
+parseNoteDoc dp = map unsafeFromRight $
   parseXMLFromString TD.noteXml dp
 
 parseMetajeloDoc :: DOMParser -> Effect Document
-parseMetajeloDoc dp = unsafePartial $ map fromRight $
+parseMetajeloDoc dp = map unsafeFromRight $
   parseXMLFromString TD.metajeloXml dp
 
 atomResolver :: NSResolver
@@ -80,8 +84,35 @@ mkCdYear doc node = liftEffect $ XP.evaluateString
   Nothing
   doc
 
+-----------------------------------------------------------------
+
+-- Provide similar API to purescript-spec to reduce code changes
+
+suite :: forall m. MonadReader String m => MonadEffect m => String -> m Unit -> m Unit
+suite msg runTest = do
+  previous <- ask
+  let testName = previous <> msg
+  liftEffect $ log testName
+  local (_ <> " ") runTest
+
+test :: forall m. MonadReader String m => MonadEffect m => String -> m Unit -> m Unit
+test = suite
+
+-- Replaces `test-unit`'s `Test.Unit.Assert.equal`, which has its first
+-- arg be the expected value and the second arg be the actual value.
+-- See `Test.Unit.Assert.shouldEqual` for proof.
+shouldEqual :: forall m a. MonadEffect m => Eq a => Show a => a -> a -> m Unit
+shouldEqual expected actual =
+  liftEffect $ Assert.assertEqual { actual, expected }
+
+assertFalse :: forall m. MonadEffect m => String -> Boolean -> m Unit
+assertFalse msg val =
+  liftEffect $ Assert.assertFalse' msg val
+
+-----------------------------------------------------------------
+
 main :: { browser :: Boolean } -> Effect Unit
-main { browser } = runTest do
+main { browser } = launchAff_ $ flip runReaderT "" do
   suite "non-namespaced tests" do
     test "note.xml and catalog.xml" do
       domParser <- liftEffect $ makeDOMParser
@@ -100,22 +131,22 @@ main { browser } = runTest do
         "/note/to" note Nothing RT.string_type Nothing noteDoc
       noteTo <- liftEffect $ XP.stringValue noteToRes
       tlog $ "got a note to: " <> noteTo
-      Assert.equal RT.string_type (XP.resultType noteToRes)
-      Assert.equal "Tove" noteTo
+      shouldEqual RT.string_type (XP.resultType noteToRes)
+      shouldEqual "Tove" noteTo
 
       cdPriceRes <- liftEffect $ XP.evaluate
         "/CATALOG/CD[2]/PRICE" catalog Nothing RT.number_type Nothing catalogDoc
       cdPrice <- liftEffect $ XP.numberValue cdPriceRes
       tlog $ "got a cd price: " <> (show cdPrice)
-      Assert.equal RT.number_type (XP.resultType cdPriceRes)
-      Assert.equal 9.90 cdPrice
+      shouldEqual RT.number_type (XP.resultType cdPriceRes)
+      shouldEqual 9.90 cdPrice
 
       cdYearRes <- liftEffect $ XP.evaluate
         "/CATALOG/CD[2]/YEAR" catalog Nothing RT.number_type Nothing catalogDoc
       cdYear <- liftEffect $ XP.numberValue cdYearRes
       tlog $ "got a cd year: " <> (show cdYear)
-      Assert.equal RT.number_type (XP.resultType cdYearRes)
-      Assert.equal (toNumber 1988) cdYear
+      shouldEqual RT.number_type (XP.resultType cdYearRes)
+      shouldEqual (toNumber 1988) cdYear
 
       cdsSnapRes <- liftEffect $ XP.evaluate
         "/CATALOG/CD"
@@ -126,16 +157,16 @@ main { browser } = runTest do
         catalogDoc
       cdsSnapLen <- liftEffect $ XP.snapshotLength cdsSnapRes
       tlog $ "got " <> (show cdsSnapLen) <> " CDs"
-      Assert.equal (intToNat 26) cdsSnapLen
+      shouldEqual (intToNat 26) cdsSnapLen
       cdsSnap <- liftEffect $ XP.snapshot cdsSnapRes
       cdYearEval <- pure $ mkCdYear catalogDoc
-      Assert.equal 26 (length cdsSnap)
+      shouldEqual 26 (length cdsSnap)
       year0 <- cdYearEval $ unsafePartial $ fromJust $ cdsSnap !! 0
-      Assert.equal "1985" year0
+      shouldEqual "1985" year0
       year1 <- cdYearEval $ unsafePartial $ fromJust $ cdsSnap !! 1
-      Assert.equal "1988" year1
+      shouldEqual "1988" year1
       year25 <- cdYearEval $ unsafePartial $ fromJust $ cdsSnap !! 25
-      Assert.equal "1987" year25
+      shouldEqual "1987" year25
 
   suite "namespaced tests" do
     test "NS resolver construction" do
@@ -143,9 +174,9 @@ main { browser } = runTest do
 
       customRes <- pure $ XP.customNSResolver (\x -> "http://foo.com")
 
-      Assert.assertFalse "custom NS resolver shouldn't be undefined"
+      assertFalse "custom NS resolver shouldn't be undefined"
         (isUndefined $ unsafeToForeign customRes)
-      Assert.assertFalse "custom NS resolver shouldn't be null"
+      assertFalse "custom NS resolver shouldn't be null"
         (isNull $ unsafeToForeign customRes)
 
       when browser $ do
@@ -153,15 +184,15 @@ main { browser } = runTest do
         atomFeed <- pure $ toNode atomFeedDoc
 
         createdNSResolver <- pure $ XP.createNSResolver atomFeed atomFeedDoc
-        Assert.assertFalse "created NS resolver shouldn't be undefined"
+        assertFalse "created NS resolver shouldn't be undefined"
           (isUndefined $ unsafeToForeign createdNSResolver)
-        Assert.assertFalse "created NS resolver shouldn't be null"
+        assertFalse "created NS resolver shouldn't be null"
           (isNull $ unsafeToForeign createdNSResolver)
 
         defNSResolver <- liftEffect $ XP.defaultNSResolver atomFeed atomFeedDoc
-        Assert.assertFalse "default NS resolver shouldn't be undefined"
+        assertFalse "default NS resolver shouldn't be undefined"
           (isUndefined $ unsafeToForeign defNSResolver)
-        Assert.assertFalse "default NS resolver shouldn't be null"
+        assertFalse "default NS resolver shouldn't be null"
           (isNull $ unsafeToForeign defNSResolver)
 
     test "atom.xml" $ when browser do
@@ -179,7 +210,7 @@ main { browser } = runTest do
         atomFeedDoc
       atomEntriesLen <- liftEffect $ XP.snapshotLength atomEntriesRes
       tlog $ "got " <> (show atomEntriesLen) <> " atom entries"
-      Assert.equal (intToNat 3) atomEntriesLen
+      shouldEqual (intToNat 3) atomEntriesLen
 
     test "metajelo.xml" do
       domParser <- liftEffect $ makeDOMParser
@@ -198,8 +229,8 @@ main { browser } = runTest do
         metajeloDoc
       metajeloId <- liftEffect $ XP.stringValue metajeloIdRes
       tlog $ "got metajelo id" <> metajeloId
-      Assert.equal RT.string_type (XP.resultType metajeloIdRes)
-      when browser $ Assert.equal "OjlTjf" metajeloId
+      shouldEqual RT.string_type (XP.resultType metajeloIdRes)
+      when browser $ shouldEqual "OjlTjf" metajeloId
 
       prod0pol0xpath <- pure $
         "/x:record/x:supplementaryProducts/x:supplementaryProduct[1]" <>
@@ -214,8 +245,8 @@ main { browser } = runTest do
         metajeloDoc
       mjProd0Pol0 <- liftEffect $ XP.stringValue mjProd0Pol0Res
       tlog $ "got metajelo ref policy " <> mjProd0Pol0
-      Assert.equal RT.string_type (XP.resultType mjProd0Pol0Res)
-      when browser $ Assert.equal "http://skGHargw/" mjProd0Pol0
+      shouldEqual RT.string_type (XP.resultType mjProd0Pol0Res)
+      when browser $ shouldEqual "http://skGHargw/" mjProd0Pol0
       --
       mjProd0Pol0AppliesRes <- liftEffect $ XP.evaluate
         (prod0pol0xpath <>  "/@appliesToProduct")
@@ -226,8 +257,8 @@ main { browser } = runTest do
         metajeloDoc
       mjProd0Pol0Applies <- liftEffect $ XP.stringValue mjProd0Pol0AppliesRes
       tlog $ "got metajelo policy appliesToProduct: " <> (show mjProd0Pol0Applies)
-      Assert.equal RT.string_type (XP.resultType mjProd0Pol0AppliesRes)
-      when browser $ Assert.equal "0" mjProd0Pol0Applies
+      shouldEqual RT.string_type (XP.resultType mjProd0Pol0AppliesRes)
+      when browser $ shouldEqual "0" mjProd0Pol0Applies
 
 tlog :: forall a. Show a => a -> Aff Unit
 tlog = liftEffect <<< logShow
