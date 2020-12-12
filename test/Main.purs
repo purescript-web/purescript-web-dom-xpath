@@ -5,9 +5,8 @@ import Prelude
 import Control.Monad.Reader.Trans (ReaderT(..), runReaderT)
 import Control.Monad.Reader.Class (class MonadReader, ask, local)
 import Data.Array                        ((!!), length)
-import Data.Either                       (fromRight)
+import Data.Either                       (Either(..), fromRight')
 import Data.Int                          (toNumber)
-import Data.Either                       (Either(..), either)
 import Data.Maybe                        (Maybe(..), fromJust, fromMaybe)
 import Data.Natural                      (intToNat)
 -- import Debug.Trace                       (traceM)
@@ -29,7 +28,7 @@ import Web.DOM.Element                   (Element, fromNode, getAttribute)
 import Web.DOM.Node                      (Node, nodeName)
 
 unsafeFromRight :: forall l r. Either l r -> r
-unsafeFromRight = either (unsafeCrashWith "Value was not Left") identity
+unsafeFromRight = fromRight' (\_ -> unsafeCrashWith "Value was not Right")
 
 parseAtomFeedDoc :: DOMParser -> Effect Document
 parseAtomFeedDoc dp = map unsafeFromRight $
