@@ -2,28 +2,27 @@ module Test.Main where
 
 import Prelude
 
-import Control.Monad.Reader.Trans (ReaderT(..), runReaderT)
-import Control.Monad.Reader.Class (class MonadReader, ask, local)
+import Control.Monad.Reader.Class        (class MonadReader, ask, local)
+import Control.Monad.Reader.Trans        (runReaderT)
 import Data.Array                        ((!!), length)
-import Data.Either                       (Either(..), fromRight')
+import Data.Either                       (Either, fromRight')
 import Data.Int                          (toNumber)
 import Data.Maybe                        (Maybe(..), fromJust, fromMaybe)
 import Data.Natural                      (intToNat)
--- import Debug.Trace                       (traceM)
 import Effect                            (Effect)
-import Effect.Aff                        (Aff, launchAff_)
+import Effect.Aff                        (launchAff_)
 import Effect.Class                      (class MonadEffect, liftEffect)
 import Effect.Console                    (logShow, log)
 import Foreign                           (isUndefined, isNull, unsafeToForeign)
 import Partial.Unsafe                    (unsafePartial, unsafeCrashWith)
+import Test.Assert                       as Assert
 import Test.Data                         as TD
-import Test.Assert as Assert
 
 import Web.DOM.Document                  (Document, toNode)
-import Web.DOM.DOMParser                 (DOMParser, makeDOMParser, parseXMLFromString)
 import Web.DOM.Document.XPath            (NSResolver)
 import Web.DOM.Document.XPath            as XP
 import Web.DOM.Document.XPath.ResultType as RT
+import Web.DOM.DOMParser                 (DOMParser, makeDOMParser, parseXMLFromString)
 import Web.DOM.Element                   (Element, fromNode, getAttribute)
 import Web.DOM.Node                      (Node, nodeName)
 
