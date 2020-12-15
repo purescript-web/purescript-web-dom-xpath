@@ -107,7 +107,7 @@ foreign import snapshotItemInternal ::
   XPathResult -> Number -> Effect (Nullable Node)
 snapshotItem :: XPathResult -> Int -> Effect (Maybe Node)
 snapshotItem xpres ix = map toMaybe $
-  snapshotItemInternal xpres (toNumber $ ix)
+  snapshotItemInternal xpres (toNumber ix)
 
 -- | High level wrapper around [snapshotItem](#v:snapshotItem)
 -- | and [snapshotLength](#v:snapshotLength)
