@@ -97,7 +97,7 @@ foreign import invalidIteratorState :: XPathResult -> Boolean
 
 foreign import snapshotLengthInternal :: XPathResult -> Effect Number
 snapshotLength :: XPathResult -> Effect Int
-snapshotLength = map (round) <<< snapshotLengthInternal
+snapshotLength = map round <<< snapshotLengthInternal
 
 foreign import iterateNextInternal :: XPathResult -> Effect (Nullable Node)
 iterateNext :: XPathResult -> Effect (Maybe Node)
