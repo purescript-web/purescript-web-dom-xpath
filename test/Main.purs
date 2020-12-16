@@ -8,7 +8,6 @@ import Data.Array                        ((!!), length)
 import Data.Either                       (Either, fromRight')
 import Data.Int                          (toNumber)
 import Data.Maybe                        (Maybe(..), fromJust, fromMaybe)
-import Data.Natural                      (intToNat)
 import Effect                            (Effect)
 import Effect.Aff                        (launchAff_)
 import Effect.Class                      (class MonadEffect, liftEffect)
@@ -155,7 +154,7 @@ main { browser } = launchAff_ $ flip runReaderT "" do
         catalogDoc
       cdsSnapLen <- liftEffect $ XP.snapshotLength cdsSnapRes
       tlog $ "got " <> (show cdsSnapLen) <> " CDs"
-      shouldEqual (intToNat 26) cdsSnapLen
+      shouldEqual 26 cdsSnapLen
       cdsSnap <- liftEffect $ XP.snapshot cdsSnapRes
       cdYearEval <- pure $ mkCdYear catalogDoc
       shouldEqual 26 (length cdsSnap)
@@ -208,7 +207,7 @@ main { browser } = launchAff_ $ flip runReaderT "" do
         atomFeedDoc
       atomEntriesLen <- liftEffect $ XP.snapshotLength atomEntriesRes
       tlog $ "got " <> (show atomEntriesLen) <> " atom entries"
-      shouldEqual (intToNat 3) atomEntriesLen
+      shouldEqual 3 atomEntriesLen
 
     test "metajelo.xml" do
       domParser <- liftEffect $ makeDOMParser

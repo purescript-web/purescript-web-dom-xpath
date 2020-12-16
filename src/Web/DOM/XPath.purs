@@ -6,7 +6,6 @@ import Data.Array                             (catMaybes, range)
 import Data.Int                               (round, toNumber)
 import Data.Maybe                             (Maybe(..))
 import Data.Nullable                          (Nullable, toMaybe, toNullable)
-import Data.Natural                           (Natural, intToNat, natToInt)
 import Data.Traversable                       (sequence)
 import Effect                                 (Effect)
 import Web.DOM.Document                       (Document, documentElement)
@@ -97,8 +96,8 @@ singleNodeValue = map toMaybe <<< singleNodeValueInternal
 foreign import invalidIteratorState :: XPathResult -> Boolean
 
 foreign import snapshotLengthInternal :: XPathResult -> Effect Number
-snapshotLength :: XPathResult -> Effect Natural
-snapshotLength = map (intToNat <<< round) <<< snapshotLengthInternal
+snapshotLength :: XPathResult -> Effect Int
+snapshotLength = map round <<< snapshotLengthInternal
 
 foreign import iterateNextInternal :: XPathResult -> Effect (Nullable Node)
 iterateNext :: XPathResult -> Effect (Maybe Node)
@@ -106,9 +105,9 @@ iterateNext = map toMaybe <<< iterateNextInternal
 
 foreign import snapshotItemInternal ::
   XPathResult -> Number -> Effect (Nullable Node)
-snapshotItem :: XPathResult -> Natural -> Effect (Maybe Node)
+snapshotItem :: XPathResult -> Int -> Effect (Maybe Node)
 snapshotItem xpres ix = map toMaybe $
-  snapshotItemInternal xpres (toNumber $ natToInt $ ix)
+  snapshotItemInternal xpres (toNumber ix)
 
 -- | High level wrapper around [snapshotItem](#v:snapshotItem)
 -- | and [snapshotLength](#v:snapshotLength)
@@ -120,14 +119,14 @@ snapshot xpres = case snapMay of
   where
     snapTypMay = RT.res2SnapType $ resultType xpres
     snapMay = map snapshotInternal snapTypMay
-    nodeAtIdx :: Natural -> Effect (Maybe Node)
+    nodeAtIdx :: Int -> Effect (Maybe Node)
     nodeAtIdx = snapshotItem xpres
     snapshotInternal :: RT.SnapshotType ->  Effect (Array Node)
     snapshotInternal snapType = do
       nNodes <- snapshotLength xpres
-      nNodesInt <- pure $ natToInt nNodes
+      nNodesInt <- pure nNodes
       -- nodeArray <- pure $ replicate nNodesInt _emptyNode
-      indices <- pure $ map intToNat $ range 0 (nNodesInt - 1)
+      indices <- pure $ range 0 (nNodesInt - 1)
       nodeArray <- sequence $ map nodeAtIdx indices
       -- TODO: currently this is likely slow due to not using state
       pure $ catMaybes nodeArray

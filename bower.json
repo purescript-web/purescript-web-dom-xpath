@@ -15,7 +15,6 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-naturals": "master",
     "purescript-web-dom": "master"
   },
   "devDependencies": {
