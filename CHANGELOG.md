@@ -5,16 +5,20 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
+- Added support for PureScript 0.14 and dropped support for all previous versions (#7)
+- Removed `naturals` dependency and changed uses of `Natural` to `Int` (#8)
 
 New features:
 
 Bugfixes:
 
 Other improvements:
+- Migrated CI to GitHub Actions and updated installation instructions to use Spago (#6)
+- Added a CHANGELOG.md file and pull request template (#10)
 
 ## [v1.2.2](https://github.com/purescript-web/purescript-web-dom-xpath/releases/tag/v1.2.2) - 2019-08-18
 
-Raised upper bound for `purescript-web-dom`
+- Raised upper bound for `purescript-web-dom`
 
 # [v1.2.1](https://github.com/purescript-web/purescript-web-dom-xpath/releases/tag/v1.2.1) - 2019-06-26
 
