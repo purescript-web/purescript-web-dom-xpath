@@ -5,6 +5,16 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
+
+New features:
+
+Bugfixes:
+
+Other improvements:
+
+## [v2.0.0](https://github.com/purescript-web/purescript-web-dom-xpath/releases/tag/v2.0.0) - 2021-02-26
+
+Breaking changes:
 - Added support for PureScript 0.14 and dropped support for all previous versions (#7)
 - Removed `naturals` dependency and changed uses of `Natural` to `Int` (#8)
 
