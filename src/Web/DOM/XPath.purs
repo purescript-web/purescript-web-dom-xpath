@@ -122,7 +122,7 @@ snapshot xpres = case snapMay of
     nodeAtIdx :: Int -> Effect (Maybe Node)
     nodeAtIdx = snapshotItem xpres
     snapshotInternal :: RT.SnapshotType ->  Effect (Array Node)
-    snapshotInternal snapType = do
+    snapshotInternal _ = do
       nNodes <- snapshotLength xpres
       nNodesInt <- pure nNodes
       -- nodeArray <- pure $ replicate nNodesInt _emptyNode
