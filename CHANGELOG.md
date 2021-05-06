@@ -11,6 +11,10 @@ New features:
 Bugfixes:
 
 Other improvements:
+
+## [v2.0.1](https://github.com/purescript-web/purescript-web-dom-xpath/releases/tag/v2.0.1) - 2021-05-06
+
+Other improvements:
 - Fix warnings revealed by v0.14.1 PS release (#13 by @JordanMartinez)
 
 ## [v2.0.0](https://github.com/purescript-web/purescript-web-dom-xpath/releases/tag/v2.0.0) - 2021-02-26
