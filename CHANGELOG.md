@@ -23,10 +23,6 @@ Breaking changes:
 - Added support for PureScript 0.14 and dropped support for all previous versions (#7)
 - Removed `naturals` dependency and changed uses of `Natural` to `Int` (#8)
 
-New features:
-
-Bugfixes:
-
 Other improvements:
 - Migrated CI to GitHub Actions and updated installation instructions to use Spago (#6)
 - Added a CHANGELOG.md file and pull request template (#10)
