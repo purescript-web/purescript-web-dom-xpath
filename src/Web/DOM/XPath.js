@@ -1,5 +1,3 @@
-"use strict";
-
 export function evaluateInternal(xpathExpression) {
   return function (contextNode) {
     return function (namespaceResolver) {

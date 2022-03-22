@@ -1,5 +1,3 @@
-"use strict";
-
 export const any_type = XPathResult.ANY_TYPE;
 export const number_type = XPathResult.NUMBER_TYPE;
 export const string_type = XPathResult.STRING_TYPE;
