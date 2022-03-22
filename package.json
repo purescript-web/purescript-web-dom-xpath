@@ -11,7 +11,7 @@
     "eslint": "^7.15.0",
     "jsdom": "^16.4.0",
     "parcel-bundler": "^1.12.4",
-    "pulp": "^15.0.0",
+    "pulp": "16.0.0-0",
     "purescript-psa": "^0.8.0",
     "rimraf": "^3.0.2"
   }
