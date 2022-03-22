@@ -4,7 +4,7 @@
   "scripts": {
     "clean": "rimraf output && rimraf .pulp-cache",
     "build": "eslint src && pulp build -- --censor-lib --strict",
-    "test": "eslint src && pulp build -I \"test\" -- --censor-lib && node test/node.js",
+    "test": "eslint src && pulp build -I \"test\" -- --censor-lib && node test/node.mjs",
     "testbrowser": "./scripts/testbrowser"
   },
   "devDependencies": {
