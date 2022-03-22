@@ -3,6 +3,7 @@ const { XPathResult, DOMParser } = new JSDOM().window;
 
 Object.assign(global, { XPathResult, DOMParser });
 
-import { main } from "../output/Test.Main/index.js";
-
-main({ browser: false })();
+(async () => {
+  const { main } = await import("../output/Test.Main/index.js");
+  main({ browser: false })();
+})();
