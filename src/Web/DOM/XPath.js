@@ -1,6 +1,4 @@
-"use strict";
-
-exports.evaluateInternal = function (xpathExpression) {
+export function evaluateInternal(xpathExpression) {
   return function (contextNode) {
     return function (namespaceResolver) {
       return function (resultType) {
@@ -20,83 +18,82 @@ exports.evaluateInternal = function (xpathExpression) {
       };
     };
   };
-};
-
+}
 
 //       --- XPathResult functions ---
 
-exports.resultType = function (xpathResult) {
+export function resultType(xpathResult) {
   return xpathResult.resultType;
-};
+}
 
-exports.numberValue = function (xpathResult) {
+export function numberValue(xpathResult) {
   return function () { // Effect thunk
     return xpathResult.numberValue;
   };
-};
+}
 
-exports.stringValue = function (xpathResult) {
+export function stringValue(xpathResult) {
   return function () { // Effect thunk
     return xpathResult.stringValue;
   };
-};
+}
 
-exports.booleanValue = function (xpathResult) {
+export function booleanValue(xpathResult) {
   return function () { // Effect thunk
     return xpathResult.booleanValue;
   };
-};
+}
 
-exports.singleNodeValueInternal = function (xpathResult) {
+export function singleNodeValueInternal(xpathResult) {
   return function () { // Effect thunk
     return xpathResult.singleNodeValue;
   };
-};
+}
 
-exports.invalidIteratorState = function (xpathResult) {
+export function invalidIteratorState(xpathResult) {
   return xpathResult.invalidIteratorState;
-};
+}
 
-exports.snapshotLengthInternal = function (xpathResult) {
+export function snapshotLengthInternal(xpathResult) {
   return function () { // Effect thunk
     return xpathResult.snapshotLength;
   };
-};
+}
 
-exports.iterateNextInternal = function (xpathResult) {
+export function iterateNextInternal(xpathResult) {
   return function () { // Effect thunk
     return xpathResult.iterateNext();
   };
-};
+}
 
-exports.snapshotItemInternal = function (xpathResult) {
+export function snapshotItemInternal(xpathResult) {
   return function (index) {
     return function () { // Effect thunk
       return xpathResult.snapshotItem(index);
     };
   };
-};
+}
 
 //       --- namespace resolver functions ---
 
-exports.customNSResolver = function (customRes) {
+export function customNSResolver(customRes) {
   var nsResolver = {
     lookupNamespaceURI : customRes
   };
   return nsResolver;
-};
+}
 
-exports.createNSResolver = function (nodeResolver) {
+export function createNSResolver(nodeResolver) {
   return function (doc) {
     return doc.createNSResolver(nodeResolver);
   };
-};
+}
 
-exports.lookupNamespaceURIInternal = function (nsResolver) {
+export function lookupNamespaceURIInternal(nsResolver) {
   return function (prefix) {
     return nsResolver.lookupNamespaceURI(prefix);
   };
-};
+}
 
 // exports._makeEmptyDoc = function () {  // Effect thunk
 //     var doc = (new DOMParser()).parseFromString('<dummy/>', 'application/xml');

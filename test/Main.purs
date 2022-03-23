@@ -169,7 +169,7 @@ main { browser } = launchAff_ $ flip runReaderT "" do
     test "NS resolver construction" do
       domParser <- liftEffect $ makeDOMParser
 
-      customRes <- pure $ XP.customNSResolver (\x -> "http://foo.com")
+      customRes <- pure $ XP.customNSResolver (\_ -> "http://foo.com")
 
       assertFalse "custom NS resolver shouldn't be undefined"
         (isUndefined $ unsafeToForeign customRes)

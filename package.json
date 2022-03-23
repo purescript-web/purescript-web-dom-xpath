@@ -4,15 +4,15 @@
   "scripts": {
     "clean": "rimraf output && rimraf .pulp-cache",
     "build": "eslint src && pulp build -- --censor-lib --strict",
-    "test": "eslint src && pulp build -I \"test\" -- --censor-lib && node test/node.js",
+    "test": "eslint src && pulp build -I \"test\" -- --censor-lib && node test/node.mjs",
     "testbrowser": "./scripts/testbrowser"
   },
   "devDependencies": {
     "eslint": "^7.15.0",
     "jsdom": "^16.4.0",
     "parcel-bundler": "^1.12.4",
-    "pulp": "^15.0.0",
-    "purescript-psa": "^0.8.0",
+    "pulp": "16.0.0-0",
+    "purescript-psa": "^0.8.2",
     "rimraf": "^3.0.2"
   }
 }

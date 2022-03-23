@@ -15,13 +15,13 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-web-dom": "^5.0.0"
+    "purescript-web-dom": "master"
   },
   "devDependencies": {
-    "purescript-aff": "^6.0.0",
-    "purescript-assert": "^5.0.0",
-    "purescript-console": "^5.0.0",
-    "purescript-foreign": "^6.0.0",
-    "purescript-web-dom-parser": "^7.0.0"
+    "purescript-aff": "main",
+    "purescript-assert": "master",
+    "purescript-console": "master",
+    "purescript-foreign": "master",
+    "purescript-web-dom-parser": "master"
   }
 }
