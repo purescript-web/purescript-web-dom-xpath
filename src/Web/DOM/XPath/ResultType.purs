@@ -2,11 +2,13 @@ module Web.DOM.Document.XPath.ResultType where
 
 import Prelude
 
-import Data.Maybe              (Maybe(..))
+import Data.Maybe (Maybe(..))
 
 newtype ResultType = ResultType Int
+
 instance showResultType :: Show ResultType where
   show (ResultType val) = "(ResultType " <> show val <> ")"
+
 derive instance eqResultType :: Eq ResultType
 
 foreign import any_type :: ResultType
@@ -19,7 +21,6 @@ foreign import unordered_node_snapshot_type :: ResultType
 foreign import ordered_node_snapshot_type :: ResultType
 foreign import any_unordered_node_type :: ResultType
 foreign import first_ordered_node_type :: ResultType
-
 
 data SnapshotType
   = UnorderedSnapshotType

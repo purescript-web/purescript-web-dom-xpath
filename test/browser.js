@@ -1,3 +1,3 @@
-import Main from "../output/Test.Main/index.js";
+import { runTests } from "../output/Test.Main/index.js";
 
-Main.main({ browser: true })();
+runTests({ browser: true })();

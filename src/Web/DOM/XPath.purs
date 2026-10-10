@@ -2,24 +2,24 @@ module Web.DOM.Document.XPath where
 
 import Prelude
 
-import Data.Array                             (catMaybes, range)
-import Data.Int                               (round, toNumber)
-import Data.Maybe                             (Maybe(..))
-import Data.Nullable                          (Nullable, toMaybe, toNullable)
-import Data.Traversable                       (sequence)
-import Effect                                 (Effect)
-import Web.DOM.Document                       (Document, documentElement)
-import Web.DOM.Document                       as Doc
-import Web.DOM.Element                        as Elem
-import Web.DOM.Node                           (Node, ownerDocument)
-import Web.DOM.Document.XPath.ResultType      (ResultType)
-import Web.DOM.Document.XPath.ResultType      as RT
+import Data.Array (catMaybes, range)
+import Data.Int (round, toNumber)
+import Data.Maybe (Maybe(..))
+import Data.Nullable (Nullable, toMaybe, toNullable)
+import Data.Traversable (sequence)
+import Effect (Effect)
+import Web.DOM.Document (Document, documentElement)
+import Web.DOM.Document as Doc
+import Web.DOM.Element as Elem
+import Web.DOM.Node (Node, ownerDocument)
+import Web.DOM.Document.XPath.ResultType (ResultType)
+import Web.DOM.Document.XPath.ResultType as RT
 
 foreign import data NSResolver :: Type
 foreign import data XPathResult :: Type
 
-evaluate ::
-  String
+evaluate
+  :: String
   -> Node
   -> Maybe NSResolver
   -> ResultType
@@ -30,8 +30,8 @@ evaluate xpath ctxt nsres resType res doc =
   evaluateInternal xpath ctxt (toNullable nsres) resType (toNullable res) doc
 
 -- | Convenience function to avoid two funciton calls and possibly mismatched types.
-evaluateNumber ::
-  String
+evaluateNumber
+  :: String
   -> Node
   -> Maybe NSResolver
   -> Maybe XPathResult
@@ -42,8 +42,8 @@ evaluateNumber xpath ctxt nsres res doc = do
   numberValue xr
 
 -- | Convenience function to avoid two funciton calls and possibly mismatched types.
-evaluateString ::
-  String
+evaluateString
+  :: String
   -> Node
   -> Maybe NSResolver
   -> Maybe XPathResult
@@ -54,8 +54,8 @@ evaluateString xpath ctxt nsres res doc = do
   stringValue xr
 
 -- | Convenience function to avoid two funciton calls and possibly mismatched types.
-evaluateBoolean ::
-  String
+evaluateBoolean
+  :: String
   -> Node
   -> Maybe NSResolver
   -> Maybe XPathResult
@@ -65,8 +65,8 @@ evaluateBoolean xpath ctxt nsres res doc = do
   xr <- evaluateInternal xpath ctxt (toNullable nsres) RT.boolean_type (toNullable res) doc
   booleanValue xr
 
-foreign import evaluateInternal ::
-  String
+foreign import evaluateInternal
+  :: String
   -> Node
   -> Nullable NSResolver
   -> ResultType
@@ -76,8 +76,7 @@ foreign import evaluateInternal ::
 
 -- createExpression :: TODO
 
-
-             --- XPathResult functions ---
+--- XPathResult functions ---
 
 foreign import resultType :: XPathResult -> ResultType
 
@@ -90,21 +89,25 @@ foreign import stringValue :: XPathResult -> Effect String
 foreign import booleanValue :: XPathResult -> Effect Boolean
 
 foreign import singleNodeValueInternal :: XPathResult -> Effect (Nullable Node)
+
 singleNodeValue :: XPathResult -> Effect (Maybe Node)
 singleNodeValue = map toMaybe <<< singleNodeValueInternal
 
 foreign import invalidIteratorState :: XPathResult -> Boolean
 
 foreign import snapshotLengthInternal :: XPathResult -> Effect Number
+
 snapshotLength :: XPathResult -> Effect Int
 snapshotLength = map round <<< snapshotLengthInternal
 
 foreign import iterateNextInternal :: XPathResult -> Effect (Nullable Node)
+
 iterateNext :: XPathResult -> Effect (Maybe Node)
 iterateNext = map toMaybe <<< iterateNextInternal
 
-foreign import snapshotItemInternal ::
-  XPathResult -> Number -> Effect (Nullable Node)
+foreign import snapshotItemInternal
+  :: XPathResult -> Number -> Effect (Nullable Node)
+
 snapshotItem :: XPathResult -> Int -> Effect (Maybe Node)
 snapshotItem xpres ix = map toMaybe $
   snapshotItemInternal xpres (toNumber ix)
@@ -117,19 +120,21 @@ snapshot xpres = case snapMay of
   Nothing -> pure mempty
   Just eArray -> eArray
   where
-    snapTypMay = RT.res2SnapType $ resultType xpres
-    snapMay = map snapshotInternal snapTypMay
-    nodeAtIdx :: Int -> Effect (Maybe Node)
-    nodeAtIdx = snapshotItem xpres
-    snapshotInternal :: RT.SnapshotType ->  Effect (Array Node)
-    snapshotInternal _ = do
-      nNodes <- snapshotLength xpres
-      nNodesInt <- pure nNodes
-      -- nodeArray <- pure $ replicate nNodesInt _emptyNode
-      indices <- pure $ range 0 (nNodesInt - 1)
-      nodeArray <- sequence $ map nodeAtIdx indices
-      -- TODO: currently this is likely slow due to not using state
-      pure $ catMaybes nodeArray
+  snapTypMay = RT.res2SnapType $ resultType xpres
+  snapMay = map snapshotInternal snapTypMay
+
+  nodeAtIdx :: Int -> Effect (Maybe Node)
+  nodeAtIdx = snapshotItem xpres
+
+  snapshotInternal :: RT.SnapshotType -> Effect (Array Node)
+  snapshotInternal _ = do
+    nNodes <- snapshotLength xpres
+    nNodesInt <- pure nNodes
+    -- nodeArray <- pure $ replicate nNodesInt _emptyNode
+    indices <- pure $ range 0 (nNodesInt - 1)
+    nodeArray <- sequence $ map nodeAtIdx indices
+    -- TODO: currently this is likely slow due to not using state
+    pure $ catMaybes nodeArray
 
 -- -- | Unsafely provided for performance in e.g. allocation of `Array`s.
 -- _emptyDoc :: Document
@@ -141,13 +146,14 @@ snapshot xpres = case snapMay of
 -- _emptyNode :: Node
 -- _emptyNode = toNode _emptyDoc
 
-  --- namespace resolver functions ---
+--- namespace resolver functions ---
 
 foreign import customNSResolver :: (String -> String) -> NSResolver
 
 foreign import createNSResolver :: Node -> Document -> NSResolver
 
 foreign import lookupNamespaceURIInternal :: NSResolver -> String -> Nullable String
+
 lookupNamespaceURI :: NSResolver -> String -> Maybe String
 lookupNamespaceURI nsRes prefix = toMaybe $ lookupNamespaceURIInternal nsRes prefix
 
@@ -163,9 +169,9 @@ defaultNSResolver nodeRes doc = do
     Just od -> docElemOrDefault od
   pure $ createNSResolver nodeResFinal doc
   where
-    docElemOrDefault :: Document -> Effect Node
-    docElemOrDefault dc = do
-      docElMay <- documentElement dc
-      pure $ case docElMay of
-        Nothing -> nodeRes
-        Just docEl -> Elem.toNode docEl
+  docElemOrDefault :: Document -> Effect Node
+  docElemOrDefault dc = do
+    docElMay <- documentElement dc
+    pure $ case docElMay of
+      Nothing -> nodeRes
+      Just docEl -> Elem.toNode docEl

@@ -1,5 +1,0 @@
-#!/usr/bin/env sh
-
-eslint src && \
-spago build --pedantic-packages && \
-parcel build --public-url ./ test/index.html

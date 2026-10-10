@@ -4,13 +4,14 @@ export function evaluateInternal(xpathExpression) {
       return function (resultType) {
         return function (result) {
           return function (doc) {
-            return function () { // Effect thunk
+            return function () {
+              // Effect thunk
               return doc.evaluate(
-                xpathExpression
-                , contextNode
-                , namespaceResolver
-                , resultType
-                , result
+                xpathExpression,
+                contextNode,
+                namespaceResolver,
+                resultType,
+                result
               );
             };
           };
@@ -27,25 +28,29 @@ export function resultType(xpathResult) {
 }
 
 export function numberValue(xpathResult) {
-  return function () { // Effect thunk
+  return function () {
+    // Effect thunk
     return xpathResult.numberValue;
   };
 }
 
 export function stringValue(xpathResult) {
-  return function () { // Effect thunk
+  return function () {
+    // Effect thunk
     return xpathResult.stringValue;
   };
 }
 
 export function booleanValue(xpathResult) {
-  return function () { // Effect thunk
+  return function () {
+    // Effect thunk
     return xpathResult.booleanValue;
   };
 }
 
 export function singleNodeValueInternal(xpathResult) {
-  return function () { // Effect thunk
+  return function () {
+    // Effect thunk
     return xpathResult.singleNodeValue;
   };
 }
@@ -55,20 +60,23 @@ export function invalidIteratorState(xpathResult) {
 }
 
 export function snapshotLengthInternal(xpathResult) {
-  return function () { // Effect thunk
+  return function () {
+    // Effect thunk
     return xpathResult.snapshotLength;
   };
 }
 
 export function iterateNextInternal(xpathResult) {
-  return function () { // Effect thunk
+  return function () {
+    // Effect thunk
     return xpathResult.iterateNext();
   };
 }
 
 export function snapshotItemInternal(xpathResult) {
   return function (index) {
-    return function () { // Effect thunk
+    return function () {
+      // Effect thunk
       return xpathResult.snapshotItem(index);
     };
   };
@@ -78,7 +86,7 @@ export function snapshotItemInternal(xpathResult) {
 
 export function customNSResolver(customRes) {
   var nsResolver = {
-    lookupNamespaceURI : customRes
+    lookupNamespaceURI: customRes,
   };
   return nsResolver;
 }
@@ -100,4 +108,3 @@ export function lookupNamespaceURIInternal(nsResolver) {
 //     doc.removeChild(doc.documentElement);
 //     return doc;
 // };
-
