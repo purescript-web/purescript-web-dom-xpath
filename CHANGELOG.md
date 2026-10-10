@@ -12,6 +12,12 @@ Bugfixes:
 
 Other improvements:
 
+## [v3.0.1](https://github.com/purescript-web/purescript-web-dom-xpath/releases/tag/v3.0.1) - 2026-10-10
+
+Other improvements:
+- Migrated from Bower/Pulp to registry-backed Spago and updated PureScript, CI, and development tooling with Oxlint, Oxfmt, and purs-tidy (#17 by @thomashoneyman).
+- Updated the browser test runner to use Chromium via Playwright (#17 by @thomashoneyman).
+
 ## [v3.0.0](https://github.com/purescript-web/purescript-web-dom-xpath/releases/tag/v3.0.0) - 2022-04-27
 
 Breaking changes:
