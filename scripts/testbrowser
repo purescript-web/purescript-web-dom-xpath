@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 
 eslint src && \
-pulp build -I "test" -- --censor-lib && \
+spago build --pedantic-packages && \
 parcel build --public-url ./ test/index.html
