@@ -1,7 +1,8 @@
 module Test.Data where
 
 atomFeedXml :: String
-atomFeedXml = """<?xml version="1.0" encoding="UTF-8"?>
+atomFeedXml =
+  """<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <entry />
     <entry />
@@ -10,7 +11,8 @@ atomFeedXml = """<?xml version="1.0" encoding="UTF-8"?>
 """
 
 cdCatalogXml :: String
-cdCatalogXml = """<?xml version="1.0" encoding="UTF-8"?>
+cdCatalogXml =
+  """<?xml version="1.0" encoding="UTF-8"?>
 <CATALOG>
   <CD>
     <TITLE>Empire Burlesque</TITLE>
@@ -224,7 +226,8 @@ cdCatalogXml = """<?xml version="1.0" encoding="UTF-8"?>
 """
 
 noteXml :: String
-noteXml = """<?xml version="1.0" encoding="UTF-8"?>
+noteXml =
+  """<?xml version="1.0" encoding="UTF-8"?>
 <note>
   <to>Tove</to>
   <from>Jani</from>
@@ -234,7 +237,8 @@ noteXml = """<?xml version="1.0" encoding="UTF-8"?>
 """
 
 metajeloXml :: String
-metajeloXml = """<?xml version="1.0" encoding="UTF-8"?>
+metajeloXml =
+  """<?xml version="1.0" encoding="UTF-8"?>
 <record xmlns:re3="http://www.re3data.org/schema/2-2"
  xmlns:datacite="http://datacite.org/schema/kernel-4"
  xmlns="http://ourdomain.cornell.edu/reuse/v.01"

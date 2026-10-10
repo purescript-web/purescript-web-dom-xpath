@@ -20,9 +20,11 @@ Module documentation is [published on Pursuit](http://pursuit.purescript.org/pac
 
 ### Run tests in a browser
 
-Do `npm run testbrowser` then open up `test/index.html` with your browser's web
-console open.
+Run `npm ci`, `npx playwright install chromium`, and `npm run testbrowser` to run
+the tests in Chromium. To inspect them interactively, open `test/index.html`
+with your browser's web console open after building the bundle.
 
 ### Headless testing
 
-Currently not working, but could be run with `npm run test`
+Run `npm test` to run the jsdom tests. Namespace assertions requiring browser
+support run in the Chromium suite.

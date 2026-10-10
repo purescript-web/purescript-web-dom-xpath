@@ -1,5 +1,0 @@
-#!/usr/bin/env sh
-
-eslint src && \
-pulp build -I "test" -- --censor-lib && \
-parcel build --public-url ./ test/index.html
